@@ -13,10 +13,12 @@ spec:
     metadata:
       labels:
         app: lxcfs-admission-webhook
+      annotations:
+        tke.cloud.tencent.com/vpc-eni-cni-ip: "true"
     spec:
       containers:
         - name: lxcfs-admission-webhook
-          image: registry.cn-hangzhou.aliyuncs.com/denverdino/lxcfs-admission-webhook:v1
+          image: csighub.tencentyun.com/mulin/lxcfs-admission-webhook:v1
           imagePullPolicy: IfNotPresent
           args:
             - -tlsCertFile=/etc/webhook/certs/cert.pem
