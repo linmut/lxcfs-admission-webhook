@@ -1,5 +1,5 @@
 #!/bin/bash
-docker build -t registry.cn-hangzhou.aliyuncs.com/denverdino/lxcfs:3.1.2 lxcfs-image
-docker push registry.cn-hangzhou.aliyuncs.com/denverdino/lxcfs:3.1.2
+docker build -t csighub.tencentyun.com/mulin/lxcfs:4.0.0 lxcfs-image
+docker push csighub.tencentyun.com/mulin/lxcfs:4.0.0
 
 ./build

@@ -1,12 +1,12 @@
-FROM centos:7 as build
+FROM centos:8 as build
 RUN yum -y update
 RUN yum -y install fuse-devel pam-devel wget install gcc automake autoconf libtool make
-ENV LXCFS_VERSION 3.1.2
+ENV LXCFS_VERSION 4.0.0
 RUN wget https://linuxcontainers.org/downloads/lxcfs/lxcfs-$LXCFS_VERSION.tar.gz && \
 	mkdir /lxcfs && tar xzvf lxcfs-$LXCFS_VERSION.tar.gz -C /lxcfs  --strip-components=1 && \
 	cd /lxcfs && ./configure && make
 
-FROM centos:7
+FROM centos:8
 STOPSIGNAL SIGINT
 COPY --from=build /lxcfs/lxcfs /usr/local/bin/lxcfs
 COPY --from=build /lxcfs/.libs/liblxcfs.so /usr/local/lib/lxcfs/liblxcfs.so
