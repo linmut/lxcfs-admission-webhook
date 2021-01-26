@@ -20,8 +20,7 @@ spec:
         effect: NoSchedule
       containers:
       - name: lxcfs
-        image: csighub.tencentyun.com/mulin/lxcfs:4.0.0
-        command: ["/bin/sleep","10000"]
+        image: csighub.tencentyun.com/mulin/lxcfs:3.1.2
         imagePullPolicy: Always
         securityContext:
           privileged: true
