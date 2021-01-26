@@ -11,4 +11,8 @@ go get -u github.com/golang/dep/cmd/dep
 cp /Users/mulin/code/godep/ali-lxcfs/bin/dep /usr/local/bin/
 dep ensure
 
-command: ["/bin/sleep","10000"]git 
+command: ["/bin/sleep","10000"]
+
+git fetch --all
+git reset --hard origin/master
+

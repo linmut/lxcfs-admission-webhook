@@ -14,7 +14,7 @@ spec:
         app: lxcfs
     spec:
       hostPID: true
-      hostNetwork: truegit
+      hostNetwork: true
       tolerations:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
