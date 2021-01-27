@@ -16,3 +16,5 @@ command: ["/bin/sleep","10000"]
 git fetch --all
 git reset --hard origin/master
 
+
+kubectl label namespace ns-prjsb7ds-1045363-production lxcfs-admission-webhook=enabled
