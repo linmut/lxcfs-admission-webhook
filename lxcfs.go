@@ -34,49 +34,61 @@ var (
 // -v /var/lib/lxcfs/proc/loadavg:/proc/loadavg:rw
 var mountPropagation = corev1.MountPropagationHostToContainer
 var volumeMountsTemplate = []corev1.VolumeMount{
-
+	{
+		Name:             "lxcfs-upper-dir",
+		MountPath:        "/var/lib/lxc",
+		MountPropagation: &mountPropagation,
+	},
 	{
 		Name:             "lxcfs-proc-cpuinfo",
 		MountPath:        "/proc/cpuinfo",
-		MountPropagation: &mountPropagation,
+		//MountPropagation: &mountPropagation,
 	},
 	{
 		Name:             "lxcfs-proc-meminfo",
 		MountPath:        "/proc/meminfo",
-		MountPropagation: &mountPropagation,
+		//MountPropagation: &mountPropagation,
 	},
 	{
 		Name:             "lxcfs-proc-diskstats",
 		MountPath:        "/proc/diskstats",
-		MountPropagation: &mountPropagation,
+		//MountPropagation: &mountPropagation,
 	},
 	{
 		Name:             "lxcfs-proc-stat",
 		MountPath:        "/proc/stat",
-		MountPropagation: &mountPropagation,
+		//MountPropagation: &mountPropagation,
 	},
 	{
 		Name:             "lxcfs-proc-swaps",
 		MountPath:        "/proc/swaps",
-		MountPropagation: &mountPropagation,
+		//MountPropagation: &mountPropagation,
 	},
 	{
 		Name:             "lxcfs-proc-uptime",
 		MountPath:        "/proc/uptime",
-		MountPropagation: &mountPropagation,
+		//MountPropagation: &mountPropagation,
 	},
 	{
 		Name:             "lxcfs-proc-loadavg",
 		MountPath:        "/proc/loadavg",
-		MountPropagation: &mountPropagation,
+		//MountPropagation: &mountPropagation,
 	},
 	{
 		Name:             "lxcfs-sys-devices-system-cpu-online",
 		MountPath:        "/sys/devices/system/cpu/online",
-		MountPropagation: &mountPropagation,
+		//MountPropagation: &mountPropagation,
 	},
 }
 var volumesTemplate = []corev1.Volume{
+	{
+		Name: "lxcfs-upper-dir",
+		VolumeSource: corev1.VolumeSource{
+			HostPath: &corev1.HostPathVolumeSource{
+				Path: "/var/lib/lxc",
+			},
+		},
+	},
 	{
 		Name: "lxcfs-proc-cpuinfo",
 		VolumeSource: corev1.VolumeSource{

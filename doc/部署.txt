@@ -13,8 +13,25 @@ dep ensure
 
 command: ["/bin/sleep","10000"]
 
+
+===
+
 git fetch --all
 git reset --hard origin/master
 
 
 kubectl label namespace ns-prjsb7ds-1045363-production lxcfs-admission-webhook=enabled
+yum install -y fuse-libs
+
+docker run --privileged=true -it  --rm -m 256m  --cpus 2 --cpuset-cpus "0,1" \
+      -v /var/lib/lxc/:/var/lib/lxc/:shared \
+      -v /var/lib/lxcfs/proc/cpuinfo:/proc/cpuinfo:rw \
+      -v /var/lib/lxcfs/proc/diskstats:/proc/diskstats:rw \
+      -v /var/lib/lxcfs/proc/meminfo:/proc/meminfo:rw \
+      -v /var/lib/lxcfs/proc/stat:/proc/stat:rw \
+      -v /var/lib/lxcfs/proc/swaps:/proc/swaps:rw \
+      -v /var/lib/lxcfs/proc/uptime:/proc/uptime:rw \
+      centos:latest /bin/bash
+
+
+

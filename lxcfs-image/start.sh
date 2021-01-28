@@ -7,7 +7,7 @@ nsenter -m/proc/1/ns/mnt [ -L /etc/mtab ] || \
         sed -i "/^lxcfs \/var\/lib\/lxcfs fuse.lxcfs/d" /etc/mtab
 
 # Prepare
-mkdir -p /usr/local/lib/lxcfs /var/lib/lxcfs
+mkdir -p /usr/local/lib/lxcfs /var/lib/lxc/lxcfs
 
 # Update lxcfs
 cp -f /lxcfs/lxcfs /usr/local/bin/lxcfs
@@ -15,5 +15,9 @@ cp -f /lxcfs/liblxcfs.so /usr/local/lib/lxcfs/liblxcfs.so
 
 
 # Mount
-#exec nsenter -m/proc/1/ns/mnt /usr/local/bin/lxcfs /var/lib/lxcfs/
-exec nsenter -m/proc/1/ns/mnt /usr/local/bin/lxcfs -s -f -o allow_other /var/lib/lxcfs/
+exec nsenter -m/proc/1/ns/mnt /usr/local/bin/lxcfs /var/lib/lxc/lxcfs
+
+# ReMount
+exec nsenter -m/proc/1/ns/mnt sh container_remount_lxcfs.sh
+exec nsenter -m/proc/1/ns/mnt tail -f /etc/hosts
+
