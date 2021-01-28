@@ -21,7 +21,7 @@ spec:
         effect: NoSchedule
       containers:
       - name: lxcfs
-        image: csighub.tencentyun.com/mulin/lxcfs:3.1.2
+        image: csighub.tencentyun.com/mulin/lxcfs:latest
         imagePullPolicy: Always
         securityContext:
           privileged: true

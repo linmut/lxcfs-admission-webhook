@@ -1,10 +1,8 @@
 FROM centos:7 as build
 RUN yum -y update
-RUN yum -y install fuse-devel pam-devel wget install gcc automake autoconf libtool make
-ENV LXCFS_VERSION 4.0.5
-RUN wget https://linuxcontainers.org/downloads/lxcfs/lxcfs-$LXCFS_VERSION.tar.gz && \
-	mkdir /lxcfs && tar xzvf lxcfs-$LXCFS_VERSION.tar.gz -C /lxcfs  --strip-components=1 && \
-	cd /lxcfs && ./configure && make
+RUN yum -y install fuse-devel pam-devel install gcc automake autoconf libtool make libcgmanager-dev libnih-dbus-dev libnih-dev libfuse-dev git
+RUN git clone git://github.com/lxc/lxcfs && \
+	cd /lxcfs && ./bootstrap.sh && ./configure && make
 
 FROM centos:7
 STOPSIGNAL SIGINT
@@ -18,3 +16,5 @@ RUN ln -s /usr/lib64/libfuse.so.2.9.2 /usr/lib64/libfuse.so.2 && \
     ln -s /usr/lib64/libulockmgr.so.1.0.1 /usr/lib64/libulockmgr.so.1
 COPY lxcfs-image/start.sh /
 CMD ["/start.sh"]
+
+
