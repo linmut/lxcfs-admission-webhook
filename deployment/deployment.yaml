@@ -20,8 +20,6 @@ spec:
         - name: lxcfs-admission-webhook
           image: ccr.ccs.tencentyun.com/mulin-lxcfs/lxcfs-admission-webhook:v3
           imagePullPolicy: IfNotPresent
-          imagePullSecrets:
-            - name: qcloudregistrykey
           args:
             - -tlsCertFile=/etc/webhook/certs/cert.pem
             - -tlsKeyFile=/etc/webhook/certs/key.pem
@@ -32,6 +30,8 @@ spec:
             - name: webhook-certs
               mountPath: /etc/webhook/certs
               readOnly: true
+      imagePullSecrets:
+        - name: qcloudregistrykey
       volumes:
         - name: webhook-certs
           secret:
