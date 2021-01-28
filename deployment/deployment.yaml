@@ -18,8 +18,10 @@ spec:
     spec:
       containers:
         - name: lxcfs-admission-webhook
-          image: csighub.tencentyun.com/mulin/lxcfs-admission-webhook:v3
+          image: ccr.ccs.tencentyun.com/mulin-lxcfs/lxcfs-admission-webhook:v3
           imagePullPolicy: IfNotPresent
+          imagePullSecrets:
+            - name: qcloudregistrykey
           args:
             - -tlsCertFile=/etc/webhook/certs/cert.pem
             - -tlsKeyFile=/etc/webhook/certs/key.pem
