@@ -1,0 +1,63 @@
+#! /bin/bash
+PATH=$PATH:/bin
+LXCFS="/var/lib/lxc/lxcfs"
+LXCFS_ROOT_PATH="/var/lib/lxc"
+
+containers=$(docker ps -q)
+
+for container in $containers;do
+        mountpoint=$(docker inspect --format '{{ range .Mounts }}{{ if eq .Destination "/var/lib/lxc" }}{{ .Source }}{{ end }}{{ end }}' $container)
+        if [ "$mountpoint" = "$LXCFS_ROOT_PATH" ];then
+                echo "remount $container"
+                PID=$(docker inspect --format '{{.State.Pid}}' $container)
+                # mount /proc
+                for file in meminfo cpuinfo stat diskstats swaps uptime loadavg;do
+                        echo nsenter --target $PID --mount --  mount --bind "$LXCFS/proc/$file" "/proc/$file"
+                        nsenter --target $PID --mount --  mount --bind "$LXCFS/proc/$file" "/proc/$file"
+                done
+
+                echo nsenter --target $PID --mount --  mount --bind "$LXCFS/sys/devices/system/cpu/online" "/sys/devices/system/cpu/online"
+                nsenter --target $PID --mount --  mount --bind "$LXCFS/sys/devices/system/cpu/online" "/sys/devices/system/cpu/online"
+        fi
+done
+====
+
+
+
+====
+wget https://copr-be.cloud.fedoraproject.org/results/ganto/lxc3/epel-7-x86_64/01041891-lxcfs/lxcfs-3.1.2-0.2.el7.x86_64.rpm
+yum -y install fuse-libs
+yum -y install lxc-templates
+yum -y install fuse
+rpm -ivh lxcfs-3.1.2-0.2.el7.x86_64.rpm
+vim /usr/local/bin/container_remount_lxcfs.sh
+chmod a+x  /usr/local/bin/container_remount_lxcfs.sh
+
+vim  /usr/lib/systemd/system/lxcfs.service
+mkdir -p /var/lib/lxc/lxcfs/
+
+
+systemctl restart lxcfs
+systemctl status lxcfs
+
+
+systemctl daemon-reload
+systemctl restart dockerd
+systemctl status dockerd
+
+
+==
+
+docker run --privileged=true -it  --rm -m 256m  --cpus 2 --cpuset-cpus "0,1" \
+      -v /var/lib/lxc/:/var/lib/lxc/:shared \
+      -v /var/lib/lxc/lxcfs/proc/cpuinfo:/proc/cpuinfo:rw \
+      -v /var/lib/lxc/lxcfs/proc/diskstats:/proc/diskstats:rw \
+      -v /var/lib/lxc/lxcfs/proc/meminfo:/proc/meminfo:rw \
+      -v /var/lib/lxc/lxcfs/proc/stat:/proc/stat:rw \
+      -v /var/lib/lxc/lxcfs/proc/swaps:/proc/swaps:rw \
+      -v /var/lib/lxc/lxcfs/proc/uptime:/proc/uptime:rw \
+      centos:latest /bin/bash
+===
+
+kubectl label namespace lxcfs lxcfs-admission-webhook=enabled
+

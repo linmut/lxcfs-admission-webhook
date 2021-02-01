@@ -5,7 +5,7 @@ metadata:
   labels:
     app: lxcfs-admission-webhook
 webhooks:
-  - name: validation.lxcfs-admission-webhook.aliyun.com
+  - name: validation.lxcfs-admission-webhook.tkex.com
     clientConfig:
       service:
         name: lxcfs-admission-webhook-svc

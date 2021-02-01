@@ -1,23 +1,86 @@
 #!/bin/bash
 
-# Cleanup
-#nsenter -m/proc/1/ns/mnt fusermount -u /var/lib/lxcfs 2> /dev/null || true
-nsenter -m/proc/1/ns/mnt fusermount -u /var/lib/lxcfs
-nsenter -m/proc/1/ns/mnt [ -L /etc/mtab ] || \
-        sed -i "/^lxcfs \/var\/lib\/lxcfs fuse.lxcfs/d" /etc/mtab
+LXCFS_ROOT=/var/lib/lxc
 
-# Prepare
-mkdir -p /usr/local/lib/lxcfs /var/lib/lxc/lxcfs
+function exit_child()
+{
+        echo "exiting..."
+        kill -15 -$BASHPID
+}
+trap exit_child INT TERM
 
-# Update lxcfs
-cp -f /lxcfs/lxcfs /usr/local/bin/lxcfs
-cp -f /lxcfs/liblxcfs.so /usr/local/lib/lxcfs/liblxcfs.so
+# umount lxcfs on host
+nsenter -t 1 -m fusermount -u /var/lib/lxcfs 2> /dev/null || true
+nsenter -t 1 -m fusermount -u ${LXCFS_ROOT}/lxcfs 2> /dev/null || true
 
+# start lxcfs
+/usr/local/bin/lxcfs --enable-cfs --enable-pidfd ${LXCFS_ROOT}/lxcfs &
 
-# Mount
-exec nsenter -m/proc/1/ns/mnt /usr/local/bin/lxcfs /var/lib/lxc/lxcfs
+until ls ${LXCFS_ROOT}/lxcfs/proc/meminfo &> /dev/null;do echo "waiting lxcfs to start..." && sleep 0.5;done
 
-# ReMount
-exec nsenter -m/proc/1/ns/mnt sh container_remount_lxcfs.sh
-exec nsenter -m/proc/1/ns/mnt tail -f /etc/hosts
+# remount containers lxcfs controllers if needed
+REMOUNT_SCRIPT='
+echo
+echo "remount start"
 
+CONTAINERD_SOCK="<none>"
+CONTAINERD_SOCKS=( "/run/containerd/containerd.sock" "/run/docker/containerd/docker-containerd.sock")
+for cs in ${CONTAINERD_SOCKS[@]};do
+  if [[ -S $cs ]];then
+    CONTAINERD_SOCK=$cs
+    break;
+  fi
+done
+if [[ $CONTAINERD_SOCK == "<none>" ]];then
+  echo "no containerd socket found"
+  exit 1
+fi
+
+CTR_EXE="<none>"
+CTR_EXES=( "/usr/local/bin/ctr" "/usr/bin/ctr" "/usr/bin/docker-container-ctr")
+for cmd in ${CTR_EXES[@]};do
+  if [[ -e $cmd ]];then
+    CTR_EXE=$cmd
+    break;
+  fi
+done
+if [[ $CTR_EXE == "<none>" ]];then
+  echo "no ctr exe found"
+  exit 1
+fi
+
+CTR_CMD="${CTR_EXE} -a ${CONTAINERD_SOCK}"
+
+CTR_NS="<none>"
+CTR_NSS=( "k8s.io" "moby")
+for ns in ${CTR_NSS[@]};do
+  if [[ $($CTR_CMD -n $ns t ls | wc -l) -gt 1 ]];then
+    CTR_NS=$ns
+    break;
+  fi
+done
+if [[ $CTR_NS == "<none>" ]];then
+  echo "no containerd namespace found or no running containers"
+  exit 1
+fi
+
+CTR_CMD="${CTR_EXE} -a ${CONTAINERD_SOCK} -n $CTR_NS"
+
+PIDS=$($CTR_CMD t ls | tail -n +2 |tr -s " " | cut -d " " -f 2)
+for pid in $PIDS;do
+  if grep " /var/lib/lxc " /proc/$pid/mountinfo &> /dev/null; then
+    echo
+    for file in cpuinfo diskstats loadavg meminfo stat swaps uptime;do
+      echo "remount lxcfs $file for $pid"
+      nsenter -t $pid -m mount --bind "/var/lib/lxc/lxcfs/proc/$file" "/proc/$file"
+    done
+    nsenter -t $pid -m mount -B "/var/lib/lxc/lxcfs/sys/devices/system/cpu/online" "/sys/devices/system/cpu/online"
+  fi
+done
+
+echo
+echo "remount done"
+'
+nsenter -t 1 -m bash -c "$REMOUNT_SCRIPT"
+
+wait

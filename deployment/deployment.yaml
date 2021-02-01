@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: lxcfs-admission-webhook-deployment
+  namespace: lxcfs
   labels:
     app: lxcfs-admission-webhook
 spec:
@@ -13,12 +14,10 @@ spec:
     metadata:
       labels:
         app: lxcfs-admission-webhook
-      annotations:
-        tke.cloud.tencent.com/vpc-eni-cni-ip: "true"
     spec:
       containers:
         - name: lxcfs-admission-webhook
-          image: ccr.ccs.tencentyun.com/mulin-lxcfs/lxcfs-admission-webhook:v3
+          image: csighub.tencentyun.com/mulin/lxcfs-admission-webhook:v4
           imagePullPolicy: IfNotPresent
           args:
             - -tlsCertFile=/etc/webhook/certs/cert.pem
@@ -30,8 +29,6 @@ spec:
             - name: webhook-certs
               mountPath: /etc/webhook/certs
               readOnly: true
-      imagePullSecrets:
-        - name: qcloudregistrykey
       volumes:
         - name: webhook-certs
           secret:

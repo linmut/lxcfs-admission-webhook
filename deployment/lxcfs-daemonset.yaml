@@ -21,26 +21,33 @@ spec:
         effect: NoSchedule
       containers:
       - name: lxcfs
-        image: ccr.ccs.tencentyun.com/mulin-lxcfs/lxcfs:3.1.2
+        image: ccr.ccs.tencentyun.com/mulin/lxcfs:4.0.7
         imagePullPolicy: Always
         securityContext:
           privileged: true
         volumeMounts:
-        - name: cgroup
-          mountPath: /sys/fs/cgroup
         - name: lxcfs
           mountPath: /var/lib/lxc/lxcfs
           mountPropagation: Bidirectional
-        - name: usr-local
-          mountPath: /usr/local
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - 9.219.9.91
+                      - 9.219.9.92
+                      - 9.219.9.93
+                      - 9.219.9.95
       volumes:
-      - name: cgroup
-        hostPath:
-          path: /sys/fs/cgroup
-      - name: usr-local
-        hostPath:
-          path: /usr/local
       - name: lxcfs
         hostPath:
           path: /var/lib/lxc/lxcfs
           type: DirectoryOrCreate
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+
