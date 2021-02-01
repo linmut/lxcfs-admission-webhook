@@ -48,6 +48,6 @@ spec:
           type: DirectoryOrCreate
   updateStrategy:
     rollingUpdate:
-      maxUnavailable: 1
+      maxUnavailable: 10000
     type: RollingUpdate
 
