@@ -2,33 +2,32 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: lxcfs
-  namespace: lxcfs
+  namespace: kube-system
   labels:
-    app: lxcfs
+    name: lxcfs
 spec:
   selector:
     matchLabels:
-      app: lxcfs
+      name: lxcfs
   template:
     metadata:
       labels:
-        app: lxcfs
+        name: lxcfs
     spec:
       hostPID: true
       hostNetwork: true
       tolerations:
-      - key: node-role.kubernetes.io/master
-        effect: NoSchedule
+        - operator: Exists
       containers:
-      - name: lxcfs
-        image: csighub.tencentyun.com/mulin/lxcfs:4.0.7
-        imagePullPolicy: Always
-        securityContext:
-          privileged: true
-        volumeMounts:
-        - name: lxcfs
-          mountPath: /var/lib/lxc/lxcfs
-          mountPropagation: Bidirectional
+        - image: ccr.ccs.tencentyun.com/tkeimages/lxcfs:4.0
+          imagePullPolicy: Always
+          name: lxcfs
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: lxcfs
+              mountPath: /var/lib/lxc/lxcfs
+              mountPropagation: Bidirectional
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -42,12 +41,11 @@ spec:
                       - 9.219.9.93
                       - 9.219.9.95
       volumes:
-      - name: lxcfs
-        hostPath:
-          path: /var/lib/lxc/lxcfs
-          type: DirectoryOrCreate
+        - name: lxcfs
+          hostPath:
+            path: /var/lib/lxc/lxcfs
+            type: DirectoryOrCreate
   updateStrategy:
     rollingUpdate:
       maxUnavailable: 10000
     type: RollingUpdate
-
