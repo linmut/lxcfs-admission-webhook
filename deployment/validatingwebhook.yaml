@@ -9,7 +9,6 @@ webhooks:
     clientConfig:
       service:
         name: lxcfs-admission-webhook-svc
-        namespace: lxcfs
         path: "/validate"
       caBundle: ${CA_BUNDLE}
     rules:
