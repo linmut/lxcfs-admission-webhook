@@ -1,6 +1,16 @@
 #!/bin/bash
 
-LXCFS_ROOT=/var/lib/lxc
+RETRY_COUNT=$1
+if [[ "${RETRY_COUNT}x" == "x" ]];then
+  RETRY_COUNT=5
+fi
+
+LXCFS_ROOT=$2
+if [[ "${LXCFS_ROOT}x" == "x" ]];then
+  LXCFS_ROOT=/var/lib/lxc
+fi
+
+DEBUG=$3
 
 function exit_child()
 {
@@ -14,9 +24,10 @@ nsenter -t 1 -m fusermount -u /var/lib/lxcfs 2> /dev/null || true
 nsenter -t 1 -m fusermount -u ${LXCFS_ROOT}/lxcfs 2> /dev/null || true
 
 # start lxcfs
-/usr/local/bin/lxcfs --enable-cfs --enable-pidfd ${LXCFS_ROOT}/lxcfs &
+/usr/local/bin/lxcfs $DEBUG --enable-cfs --enable-pidfd ${LXCFS_ROOT}/lxcfs &
 
-until ls ${LXCFS_ROOT}/lxcfs/proc/meminfo &> /dev/null;do echo "waiting lxcfs to start..." && sleep 0.5;done
+i=0
+until ls ${LXCFS_ROOT}/lxcfs/proc/meminfo &> /dev/null;do echo "waiting lxcfs to start..." && sleep 0.5 && i=$((i+1)) && if [[ $i -ge $RETRY_COUNT ]];then exit 1;fi;done
 
 # remount containers lxcfs controllers if needed
 REMOUNT_SCRIPT='
@@ -83,4 +94,7 @@ echo "remount done"
 '
 nsenter -t 1 -m bash -c "$REMOUNT_SCRIPT"
 
-wait
+until ! ps aux | grep [/]usr/local/bin/lxcfs &> /dev/null;do sleep 2;done
+
+echo "lxcfs process quited"
+nsenter -t 1 -m fusermount -u ${LXCFS_ROOT}/lxcfs 2> /dev/null || true

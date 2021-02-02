@@ -14,6 +14,7 @@ spec:
       labels:
         name: lxcfs
     spec:
+      priorityClassName: system-node-critical
       hostPID: true
       hostNetwork: true
       tolerations:
@@ -21,7 +22,13 @@ spec:
       containers:
         - image: ccr.ccs.tencentyun.com/tkeimages/lxcfs:4.0
           imagePullPolicy: Always
+          command: ["/start.sh"]
+          args: ["5", "/var/lib/lxc"]
           name: lxcfs
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
           securityContext:
             privileged: true
           volumeMounts:

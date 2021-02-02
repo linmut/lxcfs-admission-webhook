@@ -33,6 +33,8 @@ var (
 // -v /var/lib/lxcfs/proc/uptime:/proc/uptime:rw
 // -v /var/lib/lxcfs/proc/loadavg:/proc/loadavg:rw
 var mountPropagation = corev1.MountPropagationHostToContainer
+var file = corev1.HostPathFile
+var dir = corev1.HostPathDirectory
 var volumeMountsTemplate = []corev1.VolumeMount{
 	{
 		Name:             "lxcfs-upper-dir",
@@ -79,6 +81,7 @@ var volumesTemplate = []corev1.Volume{
 		VolumeSource: corev1.VolumeSource{
 			HostPath: &corev1.HostPathVolumeSource{
 				Path: "/var/lib/lxc",
+				Type: &dir,
 			},
 		},
 	},
@@ -87,6 +90,7 @@ var volumesTemplate = []corev1.Volume{
 		VolumeSource: corev1.VolumeSource{
 			HostPath: &corev1.HostPathVolumeSource{
 				Path: "/var/lib/lxc/lxcfs/proc/cpuinfo",
+				Type: &file,
 			},
 		},
 	},
@@ -95,6 +99,7 @@ var volumesTemplate = []corev1.Volume{
 		VolumeSource: corev1.VolumeSource{
 			HostPath: &corev1.HostPathVolumeSource{
 				Path: "/var/lib/lxc/lxcfs/proc/diskstats",
+				Type: &file,
 			},
 		},
 	},
@@ -103,6 +108,7 @@ var volumesTemplate = []corev1.Volume{
 		VolumeSource: corev1.VolumeSource{
 			HostPath: &corev1.HostPathVolumeSource{
 				Path: "/var/lib/lxc/lxcfs/proc/meminfo",
+				Type: &file,
 			},
 		},
 	},
@@ -111,6 +117,7 @@ var volumesTemplate = []corev1.Volume{
 		VolumeSource: corev1.VolumeSource{
 			HostPath: &corev1.HostPathVolumeSource{
 				Path: "/var/lib/lxc/lxcfs/proc/stat",
+				Type: &file,
 			},
 		},
 	},
@@ -119,6 +126,7 @@ var volumesTemplate = []corev1.Volume{
 		VolumeSource: corev1.VolumeSource{
 			HostPath: &corev1.HostPathVolumeSource{
 				Path: "/var/lib/lxc/lxcfs/proc/swaps",
+				Type: &file,
 			},
 		},
 	},
@@ -127,6 +135,7 @@ var volumesTemplate = []corev1.Volume{
 		VolumeSource: corev1.VolumeSource{
 			HostPath: &corev1.HostPathVolumeSource{
 				Path: "/var/lib/lxc/lxcfs/proc/uptime",
+				Type: &file,
 			},
 		},
 	},
@@ -135,6 +144,7 @@ var volumesTemplate = []corev1.Volume{
 		VolumeSource: corev1.VolumeSource{
 			HostPath: &corev1.HostPathVolumeSource{
 				Path: "/var/lib/lxc/lxcfs/proc/loadavg",
+				Type: &file,
 			},
 		},
 	},
@@ -143,6 +153,7 @@ var volumesTemplate = []corev1.Volume{
 		VolumeSource: corev1.VolumeSource{
 			HostPath: &corev1.HostPathVolumeSource{
 				Path: "/var/lib/lxc/lxcfs/sys/devices/system/cpu/online",
+				Type: &file,
 			},
 		},
 	},
