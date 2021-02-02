@@ -50,9 +50,9 @@ var (
 )
 
 const (
-	admissionWebhookAnnotationValidateKey = "lxcfs-admission-webhook.aliyun.com/validate"
-	admissionWebhookAnnotationMutateKey   = "lxcfs-admission-webhook.aliyun.com/mutate"
-	admissionWebhookAnnotationStatusKey   = "lxcfs-admission-webhook.aliyun.com/status"
+	admissionWebhookAnnotationValidateKey = "lxcfs-admission-webhook.tkex.com/validate"
+	admissionWebhookAnnotationMutateKey   = "lxcfs-admission-webhook.tkex.com/mutate"
+	admissionWebhookAnnotationStatusKey   = "lxcfs-admission-webhook.tkex.com/status"
 
 	nameLabel      = "app.kubernetes.io/name"
 	instanceLabel  = "app.kubernetes.io/instance"

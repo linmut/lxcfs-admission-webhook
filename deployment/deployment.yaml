@@ -6,7 +6,7 @@ metadata:
   labels:
     app: lxcfs-admission-webhook
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: lxcfs-admission-webhook
@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: lxcfs-admission-webhook
-          image: csighub.tencentyun.com/mulin/lxcfs-admission-webhook:v4
+          image: csighub.tencentyun.com/mulin/lxcfs-admission-webhook:v4.1
           imagePullPolicy: IfNotPresent
           args:
             - -tlsCertFile=/etc/webhook/certs/cert.pem

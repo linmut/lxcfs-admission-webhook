@@ -6,6 +6,7 @@ metadata:
     app: lxcfs-admission-webhook
 webhooks:
   - name: mutating.lxcfs-admission-webhook.tkex.com
+    failurePolicy: Fail
     clientConfig:
       service:
         name: lxcfs-admission-webhook-svc

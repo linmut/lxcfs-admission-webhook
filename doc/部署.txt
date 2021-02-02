@@ -33,5 +33,19 @@ docker run --privileged=true -it  --rm -m 256m  --cpus 2 --cpuset-cpus "0,1" \
       -v /var/lib/lxcfs/proc/uptime:/proc/uptime:rw \
       centos:latest /bin/bash
 
+====
+todo:
+1、怎么保障lxcfs daemonset稳定？部署的资源共享kube-system？
+2、lxcfs daemonset 重启期间，对业务监控的影响范围有多大？此时业务ps/top/free失败，强依赖监控进行调度的业务，是否有容错能力？
+3、node节点重启，如果node上有大量pod挂载lxcfs，会导致很多pod失败？
+4、怎么监控lxcfs运行是否异常，日志是否记录？
+5、lxcfs root路径变化了，存量使用lxc的pod，怎么平滑切换？
 
+
+===
+1、webhook挂载lxcfs的好处是，如果lxcfs存现重大bug需要下线，只需要关闭webhook，存量挂载lxcfs的pod只需要重建，不影响增量。
+2、webhook挂载lxcfs的坏处是，如果webhook挂掉，业务pod仍可创建出来，但是没挂载lxcfs，对那些强依赖监控进行调度的业务，会有影响。怎么保障webhook稳定？
+
+3、yaml声明挂载lxcfs，如果lxcfs出现重大bug需要下线，存量挂载lxcfs的pod需要修改yaml重建，不方便管理吗？？
+4、yaml声明挂载lxcfs，如果lxcfs daemonset失败，增量pod创建失败,那些强依赖监控进行调度的业务能感知到。
 
