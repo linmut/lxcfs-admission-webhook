@@ -15,11 +15,10 @@ spec:
       labels:
         app: lxcfs-admission-webhook
     spec:
-      priorityClassName: system-node-critical
       containers:
         - name: lxcfs-admission-webhook
           image: csighub.tencentyun.com/mulin/lxcfs-admission-webhook:v4.2
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           args:
             - -tlsCertFile=/etc/webhook/certs/cert.pem
             - -tlsKeyFile=/etc/webhook/certs/key.pem
