@@ -1,7 +1,7 @@
 #!/bin/bash
 
-LIST_TYPE="balcklist"
-#LIST_TYPE="whitelist"
+#LIST_TYPE="balcklist"
+LIST_TYPE="whitelist"
 
 kubectl create ns lxcfs
 ./deployment/webhook-create-signed-cert.sh --namespace lxcfs
