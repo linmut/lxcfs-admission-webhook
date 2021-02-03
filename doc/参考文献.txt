@@ -1,0 +1,18 @@
+
+1、Lxcfs根据cpu-share、cpu-quota等cgroup信息生成容器内的/proc文件
+https://www.lijiaocn.com/tags/all.html
+
+2、Lxcfs调研测试
+https://www.maricle.com.cn/2020/02/16/lxcfs/
+
+3、在 Kubernetes 中使用最新的 LXCFS
+https://aisensiy.github.io/page2/
+
+4、lxcfs
+https://github.com/lxc/lxcfs/tree/master
+
+5、适配tkex
+https://git.code.oa.com/borgerli/lxcfs-image/blob/master/lxcfs-ds.yaml
+
+6、tkex集群部署
+https://git.code.oa.com/STKE/kubernetes-cluster-deploy-docs/blob/master/dynamicquota/doc/deploy/06-deployment.yaml
