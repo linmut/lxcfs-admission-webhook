@@ -28,8 +28,8 @@ spec:
             - 2>&1
           resources:
             limits:
-              cpu: 1
-              memory: 1Gi
+              cpu: "2"
+              memory: "4Gi"
           volumeMounts:
             - name: webhook-certs
               mountPath: /etc/webhook/certs
