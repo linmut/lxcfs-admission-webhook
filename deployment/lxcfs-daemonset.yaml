@@ -27,8 +27,8 @@ spec:
           name: lxcfs
           resources:
             limits:
-              cpu: 500m
-              memory: 500Mi
+              memory: "4Gi"
+              cpu: "2"
           securityContext:
             privileged: true
           volumeMounts:

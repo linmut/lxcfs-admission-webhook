@@ -1,0 +1,44 @@
+
+1、
+mkdir /data/home/mulin
+cd /data/home/mulin
+git clone https://github.com/linmut/lxcfs-admission-webhook
+
+2、卸载原来的webhook
+cd /data/patrickxie/kubernetes-cluster-deploy-docs/lxcfs-admission-webhook
+./uninstall.sh
+
+3、修改原来的lxcfs daemonset的updateStrategy为OnDelete
+1）
+kubectl edit ds -n lxcfs lxcfs
+kubectl get pod -n lxcfs -o wide | grep -v Running
+
+2）更新lxcfs daemonset为新版本
+cd /data/home/mulin/lxcfs-admission-webhook/
+kubectl apply -f deployment/lxcfs-daemonset.yaml
+kubectl get pod -n lxcfs -o wide | grep -v Running , 没有变化
+
+4、没有业务的node先变更lxcfs pod
+1) 有业务pod的node先禁用
+kubectl get pod --all-namespaces -o wide | grep ns-prj | awk '{print $8}' | sort -n | uniq | xargs -i echo kubectl cordon  {}
+
+2）没有业务pod的node的lxcfs pod 先销毁创建
+kubectl get pod -n lxcfs -o wide  | wc -l
+kubectl get pod --all-namespaces -o wide | grep ns-prj | awk '{print $8}' | sort -n | uniq | wc -l
+nodes=`kubectl get pod --all-namespaces -o wide | grep ns-prj | awk '{print $8}' | sort -n | uniq | xargs echo | sed 's/ /|/g'`
+kubectl get pod -n lxcfs -o wide | grep -v -E "${nodes}" | wc -l
+
+kubectl get pod -n lxcfs -o wide | grep -v -E "${nodes}"  | grep lxcfs | awk '{print $1}' | xargs -i echo kubectl delete pod -n lxcfs {}
+kubectl get pod -n lxcfs -o wide | grep -v -E "${nodes}"
+kubectl get pod -n lxcfs -o yaml 其中一个lxcfs pod是否符合镜像版本
+
+5、部署webhook
+cd /data/home/mulin/lxcfs-admission-webhook
+./deployment/install.sh
+kubectl get pod -n lxcfs -o wide | grep webhook
+
+6、在tkex前台选中集群测试，webhook是否生效，并重启lxcfs pod，看是否受影响
+
+
+
+
