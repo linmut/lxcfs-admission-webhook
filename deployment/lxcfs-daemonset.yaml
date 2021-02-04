@@ -19,7 +19,7 @@ spec:
       tolerations:
         - operator: Exists
       containers:
-        - image: ccr.ccs.tencentyun.com/tkeimages/lxcfs:4.0
+        - image: csighub.tencentyun.com/mulin/lxcfs:4.0.7
           imagePullPolicy: Always
           command: ["/start.sh"]
           args: ["5", "/var/lib/lxc"]
