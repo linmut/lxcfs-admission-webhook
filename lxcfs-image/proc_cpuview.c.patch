@@ -1,0 +1,42 @@
+diff --git a/src/proc_cpuview.c b/src/proc_cpuview.c
+index c5bf9f9..31108f7 100644
+--- a/src/proc_cpuview.c
++++ b/src/proc_cpuview.c
+@@ -1031,6 +1031,7 @@ int read_cpuacct_usage_all(char *cg, char *cpuset,
+ 	int cg_cpu;
+ 	uint64_t cg_user, cg_system;
+ 	int64_t ticks_per_sec;
++	int is_tlinux = 1;
+
+ 	ticks_per_sec = sysconf(_SC_CLK_TCK);
+ 	if (ticks_per_sec < 0 && errno == EINVAL) {
+@@ -1071,15 +1072,26 @@ int read_cpuacct_usage_all(char *cg, char *cpuset,
+ 			lxcfs_debug("cpu%d with time %s", i, tok);
+ 		}
+ 	} else {
+-		if (sscanf(usage_str, "cpu user system\n%n", &read_cnt) != 0)
++		if (sscanf(usage_str, "cpu user system%*[^\n]\n%n", &read_cnt) != 0)
+ 			return log_error(-1, "read_cpuacct_usage_all reading first line from %s/cpuacct.usage_all failed", cg);
++		if (read_cnt == 0) {
++			is_tlinux = 0;
++			if (sscanf(usage_str, "cpu user system\n%n", &read_cnt) != 0)
++				return log_error(-1, "read_cpuacct_usage_all reading first line from %s/cpuacct.usage_all failed", cg);
+
++		}
+ 		read_pos += read_cnt;
+
+ 		for (i = 0, j = 0; i < cpucount; i++) {
+-			ret = sscanf(usage_str + read_pos,
+-					"%d %" PRIu64 " %" PRIu64 "\n%n", &cg_cpu,
++			if (is_tlinux) {
++				ret = sscanf(usage_str + read_pos,
++					"%d %" PRIu64 " %" PRIu64 "%*[^\n]\n%n", &cg_cpu,
+ 					&cg_user, &cg_system, &read_cnt);
++			} else {
++				ret = sscanf(usage_str + read_pos,
++                                        "%d %" PRIu64 " %" PRIu64 "\n%n", &cg_cpu,
++                                        &cg_user, &cg_system, &read_cnt);
++			}
+
+ 			if (ret == EOF)
+ 				break;

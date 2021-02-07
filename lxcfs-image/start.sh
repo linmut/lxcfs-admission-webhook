@@ -28,7 +28,7 @@ echo "$(date): umount existing lxcfs if any - done"
 
 # start lxcfs
 echo "$(date): start lxcfs - start - /usr/local/bin/lxcfs $DEBUG -l --enable-cfs --enable-pidfd ${LXCFS_ROOT}/lxcfs"
-/usr/local/bin/lxcfs $DEBUG --enable-cfs --enable-pidfd ${LXCFS_ROOT}/lxcfs &
+/usr/local/bin/lxcfs $DEBUG -l --enable-cfs --enable-pidfd ${LXCFS_ROOT}/lxcfs &
 echo "$(date): start lxcfs - done"
 
 i=0
@@ -86,10 +86,11 @@ PIDS=$($CTR_CMD t ls | tail -n +2 |tr -s " " | cut -d " " -f 2)
 for pid in $PIDS;do
   echo "$(date): processing $pid - start"
   if grep " /var/lib/lxc " /proc/$pid/mountinfo &> /dev/null; then
-    for file in cpuinfo diskstats meminfo stat swaps uptime;do
+    for file in cpuinfo diskstats loadavg meminfo stat swaps uptime;do
       echo "$(date): remount lxcfs $file for $pid"
       nsenter -t $pid -m mount --bind "/var/lib/lxc/lxcfs/proc/$file" "/proc/$file"
     done
+    echo "$(date): remount lxcfs /sys/devices/system/cpu/online for $pid"
     nsenter -t $pid -m mount --bind "/var/lib/lxc/lxcfs/sys/devices/system/cpu/online" "/sys/devices/system/cpu/online"
   else
     echo "$(date): $pid does not use lxcfs"

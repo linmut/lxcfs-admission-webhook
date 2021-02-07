@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: lxcfs-admission-webhook
-          image: csighub.tencentyun.com/mulin/lxcfs-admission-webhook:v4.2
+          image: csighub.tencentyun.com/mulin/lxcfs-admission-webhook:v4.3
           imagePullPolicy: Always
           args:
             - -tlsCertFile=/etc/webhook/certs/cert.pem

@@ -1,11 +1,12 @@
 FROM centos:7 as build
 RUN yum -y update
 RUN yum -y install fuse-devel pam-devel wget install gcc automake autoconf libtool make patch
-COPY lxcfs-image/proc_cpuview.c.diff /proc_cpuview.c.diff
+COPY lxcfs-image/proc_cpuview.c.patch /proc_cpuview.c.patch
+COPY lxcfs-image/proc_fuse.c.patch /proc_fuse.c.patch
 ENV LXCFS_VERSION 4.0.7
 RUN wget https://linuxcontainers.org/downloads/lxcfs/lxcfs-$LXCFS_VERSION.tar.gz && \
         mkdir /lxcfs && tar xzvf lxcfs-$LXCFS_VERSION.tar.gz -C /lxcfs  --strip-components=1 && \
-        cd /lxcfs && patch -p1 < /proc_cpuview.c.diff && ./configure && make
+        cd /lxcfs && patch -p1 < /proc_cpuview.c.patch && patch -p1 < /proc_fuse.c.patch && ./configure && make
 
 FROM centos:7
 STOPSIGNAL SIGINT
