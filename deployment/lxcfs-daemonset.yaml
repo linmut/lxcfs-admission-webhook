@@ -19,15 +19,15 @@ spec:
       tolerations:
         - operator: Exists
       containers:
-        - image: csighub.tencentyun.com/mulin/lxcfs:4.0.7
+        - image: ccr.ccs.tencentyun.com/tkeimages/lxcfs:4.0
           imagePullPolicy: Always
           command: ["/start.sh"]
           args: ["5", "/var/lib/lxc"]
           name: lxcfs
           resources:
             limits:
-              memory: "4Gi"
-              cpu: "2"
+              memory: "1Gi"
+              cpu: 500m
           securityContext:
             privileged: true
           volumeMounts:
